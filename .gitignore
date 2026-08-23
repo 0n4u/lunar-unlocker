@@ -1,0 +1,27 @@
+# Build outputs
+build/
+.gradle/
+out/
+
+# Runtime state (injector persistence data)
+.lunarunlocker/
+.vapeclient/
+
+# Logs and diagnostics
+*.log
+*_diag.txt
+
+# Binaries (build via build.bat)
+*.exe
+*.dll
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# OS
+Thumbs.db
+.DS_Store
