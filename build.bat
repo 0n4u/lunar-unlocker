@@ -190,7 +190,7 @@ if exist "build\injection\LunarUnlocker.exe" (
     echo   Next steps:
     echo     1. Launch Minecraft (64-bit JVM)
     echo     2. Run LunarUnlocker.exe, pick the Minecraft process, inject
-    echo     3. In game you got all the cosmetics in the world <3
+    echo     3. In-game press Right Shift to open the menu
     echo.
 ) else (
     echo [FAIL] Build finished but no LunarUnlocker.exe was produced.
