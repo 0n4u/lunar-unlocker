@@ -2,6 +2,17 @@
 
 > **Windows x64 Lunar Client runtime customization and cosmetic research project.**
 
+> [!CAUTION]
+> # WARNING
+>
+> If you're triggered by AI, look away.
+>
+> Some parts of this project were coded with AI, and I use AI to help push commits too.
+>
+> Mostly because GitHub's 100-file limit is fucking annoying.
+>
+> You've been warned.
+
 LunarUnlocker is a Windows x64 native loader, JVM bridge, and Java bytecode transformation project designed around Lunar Client.
 
 It provides runtime cosmetic-related functionality for cosmetics, badges, emotes, sprays, jams, and Lunar+ features while keeping modifications in memory rather than permanently modifying Lunar Client files.
