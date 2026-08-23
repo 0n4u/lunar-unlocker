@@ -1,25 +1,19 @@
 # Build outputs
 build/
 .gradle/
-out/
+*.exe
+*.dll
 
-# Runtime state (injector persistence data)
+# Runtime state (unlocker persistence data)
 .lunarunlocker/
-.vapeclient/
 
 # Logs and diagnostics
 *.log
 *_diag.txt
 
-# Binaries (build via build.bat)
-*.exe
-*.dll
-
 # IDE
 .idea/
 *.iml
-*.ipr
-*.iws
 .vscode/
 
 # OS

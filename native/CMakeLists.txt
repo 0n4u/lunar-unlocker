@@ -99,6 +99,122 @@ add_custom_command(
         COMMENT "Embedding LunarUnlockerNative.dll into the GUI loader")
 target_sources(LunarUnlockerLoaderGui PRIVATE "${LUNARUNLOCKER_LOADER_GUI_DLL_RC}")
 
+include(CTest)
+if(BUILD_TESTING)
+    add_executable(LunarUnlockerBootstrapTest
+            tests/loader_bootstrap_test.c
+            loader_bootstrap.c)
+    target_include_directories(LunarUnlockerBootstrapTest PRIVATE
+            "${CMAKE_CURRENT_SOURCE_DIR}")
+    target_compile_definitions(LunarUnlockerBootstrapTest PRIVATE
+            WIN32_LEAN_AND_MEAN
+            _CRT_SECURE_NO_WARNINGS)
+    target_compile_options(LunarUnlockerBootstrapTest PRIVATE /W4 /utf-8)
+    target_link_libraries(LunarUnlockerBootstrapTest PRIVATE ws2_32)
+    add_test(NAME LunarUnlockerBootstrapStandalone
+            COMMAND LunarUnlockerBootstrapTest standalone)
+    add_test(NAME LunarUnlockerBootstrapHandoff COMMAND LunarUnlockerBootstrapTest)
+    add_test(NAME LunarUnlockerBootstrapRejectsInvalid
+            COMMAND LunarUnlockerBootstrapTest invalid)
+
+    add_executable(LoaderSettingsTest
+            tests/loader_settings_test.cpp
+            loader_gui/loader_settings.cpp)
+    target_include_directories(LoaderSettingsTest PRIVATE
+            "${CMAKE_CURRENT_SOURCE_DIR}/loader_gui")
+    target_compile_features(LoaderSettingsTest PRIVATE cxx_std_17)
+    target_compile_definitions(LoaderSettingsTest PRIVATE
+            WIN32_LEAN_AND_MEAN
+            UNICODE _UNICODE NOMINMAX)
+    target_compile_options(LoaderSettingsTest PRIVATE /W4 /permissive- /utf-8)
+    set_property(TARGET LoaderSettingsTest PROPERTY
+            MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+    add_test(NAME LoaderSettings COMMAND LoaderSettingsTest)
+
+    add_executable(AutoInjectReadinessTest
+            tests/auto_inject_readiness_test.cpp
+            loader_gui/auto_inject_readiness.cpp)
+    target_include_directories(AutoInjectReadinessTest PRIVATE
+            "${CMAKE_CURRENT_SOURCE_DIR}/loader_gui")
+    target_compile_features(AutoInjectReadinessTest PRIVATE cxx_std_17)
+    target_compile_options(AutoInjectReadinessTest PRIVATE /W4 /permissive- /utf-8)
+    set_property(TARGET AutoInjectReadinessTest PROPERTY
+            MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+    add_test(NAME AutoInjectReadiness COMMAND AutoInjectReadinessTest)
+
+    add_executable(Win32ProcessProbeTest
+            tests/win32_process_probe_test.cpp
+            loader_gui/win32_process_probe.cpp
+            loader_gui/auto_inject_readiness.cpp)
+    target_include_directories(Win32ProcessProbeTest PRIVATE
+            "${CMAKE_CURRENT_SOURCE_DIR}/loader_gui")
+    target_compile_features(Win32ProcessProbeTest PRIVATE cxx_std_17)
+    target_compile_definitions(Win32ProcessProbeTest PRIVATE
+            WIN32_LEAN_AND_MEAN
+            UNICODE _UNICODE NOMINMAX)
+    target_compile_options(Win32ProcessProbeTest PRIVATE /W4 /permissive- /utf-8)
+    set_property(TARGET Win32ProcessProbeTest PROPERTY
+            MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+    add_test(NAME Win32ProcessProbe COMMAND Win32ProcessProbeTest)
+
+    add_executable(InjectionCoordinatorTest
+            tests/injection_coordinator_test.cpp
+            loader_gui/injection_coordinator.cpp
+            loader_gui/win32_process_probe.cpp
+            loader_gui/auto_inject_readiness.cpp)
+    target_include_directories(InjectionCoordinatorTest PRIVATE
+            "${CMAKE_CURRENT_SOURCE_DIR}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/loader_gui")
+    target_compile_features(InjectionCoordinatorTest PRIVATE cxx_std_17)
+    target_compile_definitions(InjectionCoordinatorTest PRIVATE
+            WIN32_LEAN_AND_MEAN
+            UNICODE _UNICODE NOMINMAX
+            _CRT_SECURE_NO_WARNINGS)
+    target_compile_options(InjectionCoordinatorTest PRIVATE /W4 /permissive- /utf-8)
+    target_link_libraries(InjectionCoordinatorTest PRIVATE advapi32)
+    set_property(TARGET InjectionCoordinatorTest PROPERTY
+            MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+    add_test(NAME InjectionCoordinator COMMAND InjectionCoordinatorTest)
+
+    add_executable(ControllerModelWorkerTest
+            tests/controller_model_worker_test.cpp
+            loader_gui/controller_model.cpp
+            loader_gui/injection_coordinator.cpp
+            loader_gui/local_controller_service.cpp
+            loader_gui/win32_process_probe.cpp
+            loader_gui/auto_inject_readiness.cpp
+            loader_gui/loader_settings.cpp)
+    target_include_directories(ControllerModelWorkerTest PRIVATE
+            "${CMAKE_CURRENT_SOURCE_DIR}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/loader_gui")
+    target_compile_features(ControllerModelWorkerTest PRIVATE cxx_std_17)
+    target_compile_definitions(ControllerModelWorkerTest PRIVATE
+            WIN32_LEAN_AND_MEAN
+            UNICODE _UNICODE NOMINMAX
+            _CRT_SECURE_NO_WARNINGS)
+    target_compile_options(ControllerModelWorkerTest PRIVATE /W4 /permissive- /utf-8)
+    target_link_libraries(ControllerModelWorkerTest PRIVATE
+            advapi32 shell32 user32 winhttp ws2_32)
+    set_property(TARGET ControllerModelWorkerTest PROPERTY
+            MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+    add_test(NAME ControllerModelWorker COMMAND ControllerModelWorkerTest)
+
+    add_executable(LocalControllerServiceTest
+            tests/local_controller_service_test.cpp
+            loader_gui/local_controller_service.cpp)
+    target_include_directories(LocalControllerServiceTest PRIVATE
+            "${CMAKE_CURRENT_SOURCE_DIR}/loader_gui")
+    target_compile_features(LocalControllerServiceTest PRIVATE cxx_std_17)
+    target_compile_definitions(LocalControllerServiceTest PRIVATE
+            WIN32_LEAN_AND_MEAN
+            UNICODE _UNICODE NOMINMAX)
+    target_compile_options(LocalControllerServiceTest PRIVATE /W4 /permissive- /utf-8)
+    target_link_libraries(LocalControllerServiceTest PRIVATE ws2_32)
+    set_property(TARGET LocalControllerServiceTest PROPERTY
+            MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+    add_test(NAME LocalControllerService COMMAND LocalControllerServiceTest)
+    set_tests_properties(LocalControllerService PROPERTIES TIMEOUT 10)
+endif()
 
 set_property(TARGET LunarUnlockerNative LunarUnlockerLoaderGui
         PROPERTY
