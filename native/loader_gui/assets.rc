@@ -1,0 +1,5 @@
+#include "resource_ids.h"
+
+
+IDR_ASSET_PROXIMA_REGULAR RCDATA "assets/proxima-regular.ttf"
+IDR_ASSET_PROXIMA_SEMIBOLD RCDATA "assets/proxima-semibold.otf"

@@ -1,0 +1,4 @@
+#pragma once
+
+#define IDR_ASSET_PROXIMA_REGULAR 121
+#define IDR_ASSET_PROXIMA_SEMIBOLD 122

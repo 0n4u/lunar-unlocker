@@ -1,0 +1,60 @@
+package gg.lunarunlocker.mapping;
+
+import gg.lunarunlocker.LunarUnlocker;
+import gg.lunarunlocker.mapping.MappingTask;
+import java.util.ArrayList;
+import java.util.List;
+
+public class MappingTaskSet {
+    protected List<MappingTask> D = new ArrayList<MappingTask>();
+
+    public void d() {
+        int n = 0;
+        for (MappingTask mappingTask : this.D) {
+            ++n;
+            if (mappingTask.isApplied()) continue;
+            int n2 = 0;
+            String phase = "prepare";
+            try {
+                mappingTask.prepare();
+                phase = "transform";
+                mappingTask.transform();
+                phase = "serialize";
+                mappingTask.serialize();
+                phase = "commit";
+                n2 = mappingTask.commit();
+            }
+            catch (Throwable throwable) {
+                n2 = -1;
+                LunarUnlocker.debugLog("Mapping task " + n + " failed during " + phase
+                    + ": " + mappingTask.getClass().getName()
+                    + " -> " + MappingTaskSet.targetName(mappingTask));
+                LunarUnlocker.logThrowable(throwable);
+            }
+            if (n2 == 0) continue;
+            String string = n2 + " " + n;
+            if (n2 != -1) {
+                LunarUnlocker.debugLog("Mapping task " + n + " commit returned " + n2
+                    + ": " + mappingTask.getClass().getName()
+                    + " -> " + MappingTaskSet.targetName(mappingTask));
+            }
+            
+            
+        }
+    }
+
+    private static String targetName(MappingTask mappingTask) {
+        Class targetClass = mappingTask.getTargetClass();
+        return targetClass == null ? "<null>" : targetClass.getName();
+    }
+
+    private static Throwable a(Throwable throwable) {
+        return throwable;
+    }
+
+    public void C() {
+        for (MappingTask mappingTask : this.D) {
+            mappingTask.rollback();
+        }
+    }
+}
