@@ -1164,20 +1164,6 @@ static jint JNICALL native_mfv2(
     return 0;
 }
 
-static jint JNICALL native_dsv2(
-        JNIEnv *env, jclass bridge, jint index, jstring value,
-        jdouble low, jdouble high, jint mode, jfloat step) {
-    (void)env;
-    (void)bridge;
-    (void)index;
-    (void)value;
-    (void)low;
-    (void)high;
-    (void)mode;
-    (void)step;
-    return 0;
-}
-
 static jstring JNICALL bridge_gat(JNIEnv *env, jclass bridge) {
     const char *token;
     (void)bridge;
@@ -1210,8 +1196,6 @@ jint lunarunlocker_register_native_bridge(JNIEnv *env, jclass bridge_class) {
         {"inv", "(Ljava/lang/reflect/Method;Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;",
                 (void *)native_inv},
         {"gat", "()Ljava/lang/String;", (void *)bridge_gat},
-        
-        {"dsv2", "(ILjava/lang/String;DDIF)I", (void *)native_dsv2},
         {"ss_2", "(Ljava/lang/String;)I", (void *)native_ss_2},
         {"mfv2", "(IILjava/lang/String;)I", (void *)native_mfv2},
         {"ss", "(Ljava/lang/String;)V", (void *)native_ss},

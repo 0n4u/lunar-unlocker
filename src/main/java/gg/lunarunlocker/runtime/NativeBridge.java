@@ -488,11 +488,6 @@ public class NativeBridge {
     }
 
     
-    
-    public static native int dsv2(int fontId, String text, double x, double y,
-                                  int color, float scale);
-
-    
     public static int gmv() {
         Throwable lastFailure = null;
 

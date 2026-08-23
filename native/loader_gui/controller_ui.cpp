@@ -206,8 +206,9 @@ bool ControllerUi::pointerIn(float x, float y, float width, float height) const 
 
 void ControllerUi::updateFrame() {
     const auto now = std::chrono::steady_clock::now();
-    const double delta = std::clamp(std::chrono::duration<double>(now - lastFrame_).count(),
-        0.0, 0.1);
+    const float delta = static_cast<float>(std::clamp(
+            std::chrono::duration<double>(now - lastFrame_).count(),
+            0.0, 0.1));
     lastFrame_ = now;
     model_.tick();
 
@@ -676,7 +677,6 @@ void ControllerUi::drawSettings(Gdiplus::Graphics& graphics) {
     const float open = settingsOpen_;
     if (open <= 0.001f) return;
     const float slide = (1.0f - open) * 24.0f; 
-    const BYTE panelAlpha = static_cast<BYTE>(255.0f * open);
 
     const auto withOpen = [&](const Gdiplus::Color& c) {
         return Gdiplus::Color(static_cast<BYTE>(c.GetA() * open), c.GetR(), c.GetG(), c.GetB());
