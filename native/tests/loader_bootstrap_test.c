@@ -4,7 +4,7 @@
 #include <windows.h>
 #include "../loader_bootstrap.h"
 
-/* Test helpers */
+ 
 static int tests_passed = 0;
 static int tests_failed = 0;
 
@@ -13,16 +13,13 @@ static int tests_failed = 0;
 #define FAIL(msg) do { printf("FAIL: %s\n", msg); tests_failed++; } while(0)
 #define ASSERT(cond, msg) do { if (!(cond)) { FAIL(msg); return; } } while(0)
 
-/* ------------------------------------------------------------------ */
+ 
 
 static void test_standalone(void) {
-    /* Standalone mode: no bootstrap memory mapping exists.
-     * initialize_bootstrap() should detect ERROR_FILE_NOT_FOUND
-     * and set token_state to STANDALONE with token "0". */
+     
     TEST("standalone mode — no bootstrap mapping");
 
-    /* No bootstrap mapping was created, so initialize should
-     * succeed with token "0" (standalone mode). */
+     
     int ok = lunarunlocker_loader_bootstrap_initialize();
     ASSERT(ok != 0, "initialize should return non-zero (standalone)");
 
@@ -37,11 +34,10 @@ static void test_standalone(void) {
     PASS();
 }
 
-/* ------------------------------------------------------------------ */
+ 
 
 static void test_initialize_twice(void) {
-    /* InitOnceExecuteOnce should run only once; calling initialize
-     * again should return the same state. */
+     
     TEST("initialize twice — idempotent");
 
     int ok = lunarunlocker_loader_bootstrap_initialize();
@@ -59,19 +55,16 @@ static void test_initialize_twice(void) {
     PASS();
 }
 
-/* ------------------------------------------------------------------ */
+ 
 
 static void test_clear_restores_state(void) {
-    /* After clear, the next initialize should be able to run again
-     * (InitOnceExecuteOnce is already consumed on this process, so
-     * calling initialize again after clear returns the cached state).
-     * This tests that clear at least zeroes the token. */
+     
     TEST("clear zeroes token");
 
-    /* Call initialize first to set state */
+     
     lunarunlocker_loader_bootstrap_initialize();
 
-    /* Clear — should zero the token */
+     
     lunarunlocker_loader_bootstrap_clear();
 
     const char *token = lunarunlocker_loader_access_token();
@@ -82,14 +75,13 @@ static void test_clear_restores_state(void) {
     PASS();
 }
 
-/* ------------------------------------------------------------------ */
+ 
 
 static void test_report_progress_no_crash(void) {
-    /* Report functions should not crash even when no controller
-     * socket is connected (the functions check for INVALID_SOCKET). */
+     
     TEST("report progress — no controller socket");
 
-    /* These should be safe no-ops */
+     
     lunarunlocker_loader_report_progress(1);
     lunarunlocker_loader_report_progress(50);
     lunarunlocker_loader_report_progress(100);
@@ -115,7 +107,7 @@ static void test_report_failure_null_no_crash(void) {
     PASS();
 }
 
-/* ------------------------------------------------------------------ */
+ 
 
 int main(int argc, char **argv) {
     int run_all = (argc < 2);

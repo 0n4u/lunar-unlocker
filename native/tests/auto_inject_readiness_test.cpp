@@ -7,7 +7,7 @@
 #include "../loader_gui/auto_inject_readiness.h"
 #include "../loader_gui/loader_settings.h"
 
-/* Minimal test harness (no gtest — CTest runs directly). */
+ 
 static int tests_passed = 0;
 static int tests_failed = 0;
 
@@ -23,7 +23,8 @@ namespace {
 ProcessObservation readyObservation() {
     ProcessObservation observation;
     observation.identity.pid = 1234;
-    observation.identity.creationTime100ns = 133300000000000000ULL;  // plausible
+    observation.identity.creationTime100ns = 133300000000000000ULL;  
+
     observation.exeName = L"java.exe";
     observation.commandLine = L"javaw.exe --username foo --uuid 1234 "
         L"--accesstoken abc --usertype mojang --versiontype release "
@@ -47,7 +48,8 @@ AutoInjectPolicy readyPolicy() {
     return policy;
 }
 
-}  // namespace
+}  
+
 
 static void test_ready_process() {
     TEST("ready java+Lunar process evaluates Ready");
@@ -344,7 +346,8 @@ static void test_select_candidate_picks_newest() {
     ProcessObservation notReady = readyObservation();
     notReady.identity.pid = 300;
     notReady.identity.creationTime100ns = 3000;
-    notReady.visible = false;  // not ready
+    notReady.visible = false;  
+
 
     const std::vector<ProcessObservation> observations = {older, notReady, newer};
     const auto selected = selectAutoInjectCandidate(observations, readyPolicy());

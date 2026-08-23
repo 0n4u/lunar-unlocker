@@ -8,7 +8,7 @@
 #include "../loader_gui/controller_model.h"
 #include "../loader_gui/loader_settings.h"
 
-/* Minimal test harness (no gtest — CTest runs directly). */
+ 
 static int tests_passed = 0;
 static int tests_failed = 0;
 
@@ -19,7 +19,7 @@ static int tests_failed = 0;
 
 using namespace std::chrono_literals;
 
-/* A fake ProcessProbe that yields no processes — deterministic and fast. */
+ 
 class EmptyProbe final : public ProcessProbe {
 public:
     std::vector<ProcessObservation> probe() override { return {}; }
@@ -44,9 +44,7 @@ static void test_initial_page_is_valid() {
     TEST("initial page is a valid ControllerPage (async start possible)");
 
     ControllerModel model(testDependencies());
-    /* The constructor kicks off an asynchronous auto-login attempt, so the
-     * observed page may legitimately be Login, Loading, or Error by the
-     * time we read it. Contract: it must be one of the known pages. */
+     
     const auto page = model.page();
     ASSERT(page == ControllerPage::Login
             || page == ControllerPage::Loading

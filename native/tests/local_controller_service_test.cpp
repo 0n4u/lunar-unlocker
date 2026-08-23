@@ -6,7 +6,7 @@
 
 #include "../loader_gui/local_controller_service.h"
 
-/* Minimal test harness (no gtest — CTest runs directly). */
+ 
 static int tests_passed = 0;
 static int tests_failed = 0;
 
@@ -50,8 +50,7 @@ static void test_double_start_restarts() {
     const std::uint16_t firstPort = service.port();
     ASSERT(firstPort != 0, "first start should bind a port");
 
-    /* start() deliberately calls stop() first (documented restart
-     * semantics), so a second start is expected to succeed. */
+     
     ASSERT(service.start("token-b", true, false), "second start should succeed");
     ASSERT(service.port() != 0, "second start should bind a port");
     service.stop();
@@ -87,7 +86,7 @@ static void test_destructor_stops() {
         LocalControllerService service;
         ASSERT(service.start("test-token", true, false), "start should succeed");
         ASSERT(service.port() != 0, "port should be assigned");
-        /* service goes out of scope; destructor must join the thread */
+         
     }
     PASS();
 }

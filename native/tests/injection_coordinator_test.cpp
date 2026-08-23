@@ -6,7 +6,7 @@
 
 #include "../loader_gui/injection_coordinator.h"
 
-/* Minimal test harness (no gtest — CTest runs directly). */
+ 
 static int tests_passed = 0;
 static int tests_failed = 0;
 
@@ -22,9 +22,7 @@ static ProcessIdentity identity(std::uint32_t pid, std::uint64_t creation) {
     return value;
 }
 
-/* These tests exercise the coordinator's error paths only — the success
- * path requires a live Minecraft process with the DLL present, which is
- * not available in a unit-test environment. */
+ 
 
 static void test_inject_nonexistent_pid() {
     TEST("injectProductDll — nonexistent pid fails cleanly");

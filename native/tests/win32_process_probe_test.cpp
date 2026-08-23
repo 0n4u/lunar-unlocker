@@ -10,7 +10,7 @@
 #include "../loader_gui/auto_inject_readiness.h"
 #include "../loader_gui/win32_process_probe.h"
 
-/* Minimal test harness (no gtest — CTest runs directly). */
+ 
 static int tests_passed = 0;
 static int tests_failed = 0;
 
@@ -156,9 +156,7 @@ static void test_probe_lists_java_processes() {
 
     Win32ProcessProbe probe;
     const std::vector<ProcessObservation> observations = probe.probe();
-    /* The probe filters to java.exe/javaw.exe only — this test binary is
-     * not a Java process, so the list may legitimately be empty. The
-     * contract under test: no crash, no invalid identities. */
+     
     for (const auto& observation : observations) {
         ASSERT(observation.identity.pid != 0,
             "probe must not return zero pid");

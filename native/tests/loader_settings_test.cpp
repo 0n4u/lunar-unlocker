@@ -10,7 +10,7 @@
 
 #include "../loader_gui/loader_settings.h"
 
-/* Minimal test harness (no gtest dependency — CTest runs this directly). */
+ 
 static int tests_passed = 0;
 static int tests_failed = 0;
 
@@ -35,7 +35,8 @@ void writeFile(const std::wstring& path, const std::string& contents) {
     file << contents;
 }
 
-}  // namespace
+}  
+
 
 static void test_defaults() {
     TEST("defaults — all fields have safe defaults");
@@ -105,8 +106,10 @@ static void test_clamping_on_save() {
     const std::wstring path = tempSettingsPath();
 
     LoaderSettings settings;
-    settings.settleDelayMs = 1;         // below min 2000
-    settings.minimumProcessAgeMs = 999999;  // above max 60000
+    settings.settleDelayMs = 1;         
+
+    settings.minimumProcessAgeMs = 999999;  
+
 
     ASSERT(settings.saveTo(path), "saveTo should succeed");
 
@@ -136,7 +139,8 @@ static void test_malformed_lines_ignored() {
         "this line has no equals\n"
         "=starts with equals\n"
         "auto_inject=true\n"
-        "settle_delay_ms=abc\n"      // non-numeric → ignored (keeps default)
+        "settle_delay_ms=abc\n"      
+
         "unknown_key=whatever\n"
         "readiness=window-stable\n");
 
@@ -171,7 +175,8 @@ static void test_unicode_language_round_trip() {
     const std::wstring path = tempSettingsPath();
 
     LoaderSettings settings;
-    settings.language = L"\u4e2d\u6587";  // 中文
+    settings.language = L"\u4e2d\u6587";  
+
 
     ASSERT(settings.saveTo(path), "saveTo should succeed");
     LoaderSettings loaded = LoaderSettings::loadFrom(path);
