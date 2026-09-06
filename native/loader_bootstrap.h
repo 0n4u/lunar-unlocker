@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define LUNARUNLOCKER_BOOTSTRAP_MAGIC 0x54423456u
 #define LUNARUNLOCKER_BOOTSTRAP_VERSION 2u
 #define LUNARUNLOCKER_BOOTSTRAP_MODE_ONLINE 1u
@@ -37,5 +41,9 @@ void lunarunlocker_loader_report_progress(int step);
 void lunarunlocker_loader_report_completed(void);
 void lunarunlocker_loader_report_failure(const char *message);
 void lunarunlocker_loader_bootstrap_clear(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -6,6 +6,8 @@
 #include <string.h>
 #include <wchar.h>
 
+int lunarunlocker_direct_engine_run(HMODULE module);
+
 static volatile LONG g_loaded_by_jni = 0;
 static wchar_t g_log_file[MAX_PATH];
 static LONG g_log_path_ready = 0;
@@ -944,132 +946,18 @@ static int call_bridge_start(JNIEnv *env, jclass bridge_class) {
 }
 
 static DWORD WINAPI bootstrap_thread(LPVOID parameter) {
-    HMODULE jvm_module;
-    FARPROC created_vms_address;
-    typedef jint (JNICALL *get_created_vms_fn)(JavaVM **, jsize, jsize *);
-    get_created_vms_fn get_created_vms;
-    JavaVM *vm = NULL;
-    JNIEnv *env = NULL;
-    jsize vm_count = 0;
-    jobject loader = NULL;
-    jclass bridge_class = NULL;
-    wchar_t jar_path[MAX_PATH];
-    int attached = 0;
-    int registered = 0;
-    int completed = 0;
-    int attempt;
     HMODULE worker_module = (HMODULE)parameter;
-    DWORD exit_code = 1;
-
     if (!lunarunlocker_loader_bootstrap_initialize()) {
-        lunarunlocker_log(L"Loader token bootstrap is invalid");
-        exit_code = 6;
-        goto cleanup;
+        lunarunlocker_loader_report_failure("Loader token bootstrap is invalid");
+        return 6;
     }
-    Sleep(150);
-    if (InterlockedCompareExchange(&g_loaded_by_jni, 0, 0) != 0) {
-        return 0;
+    lunarunlocker_log(L"Starting direct Lunar catalog engine");
+    if (!lunarunlocker_direct_engine_run(worker_module)) {
+        lunarunlocker_loader_report_failure(
+                "Direct catalog engine could not start");
+        return 16;
     }
-    for (attempt = 0; attempt < 600; ++attempt) {
-        jvm_module = GetModuleHandleW(L"jvm.dll");
-        if (jvm_module != NULL) break;
-        Sleep(100);
-    }
-    if (jvm_module == NULL) {
-        lunarunlocker_log(L"jvm.dll is not loaded");
-        exit_code = 2;
-        goto cleanup;
-    }
-    created_vms_address = GetProcAddress(jvm_module, "JNI_GetCreatedJavaVMs");
-    if (created_vms_address == NULL) {
-        lunarunlocker_log(L"JNI_GetCreatedJavaVMs export is unavailable");
-        exit_code = 3;
-        goto cleanup;
-    }
-    get_created_vms = (get_created_vms_fn)created_vms_address;
-    for (attempt = 0; attempt < 600; ++attempt) {
-        if (get_created_vms(&vm, 1, &vm_count) == JNI_OK
-                && vm != NULL && vm_count >= 1) {
-            break;
-        }
-        vm = NULL;
-        vm_count = 0;
-        Sleep(100);
-    }
-    if (vm == NULL || vm_count < 1) {
-        lunarunlocker_log(L"JNI_GetCreatedJavaVMs returned no VM");
-        exit_code = 4;
-        goto cleanup;
-    }
-    if ((*vm)->AttachCurrentThreadAsDaemon(vm, (void **)&env, NULL) != JNI_OK
-            || env == NULL) {
-        lunarunlocker_log(L"AttachCurrentThreadAsDaemon failed");
-        exit_code = 5;
-        goto cleanup;
-    }
-    attached = 1;
-    set_lunarunlocker_directory_property(env);
-    if (lunarunlocker_initialize_jvmti(vm) != JNI_OK) {
-        goto cleanup;
-    }
-    if (!materialize_embedded_product_jar(jar_path,
-            sizeof(jar_path) / sizeof(jar_path[0]))) {
-        goto cleanup;
-    }
-    for (attempt = 0; attempt < 600 && loader == NULL; ++attempt) {
-        loader = find_client_class_loader(env);
-        if (loader == NULL) {
-            Sleep(100);
-        }
-    }
-    if (loader == NULL) {
-        lunarunlocker_log(L"Minecraft client/render thread was not found within 60 seconds");
-        goto cleanup;
-    }
-    if (!add_jar_to_loader(env, &loader, jar_path)) {
-        goto cleanup;
-    }
-    if (!set_current_context_class_loader(env, loader)) {
-        goto cleanup;
-    }
-    bridge_class = load_bridge_class(env, loader);
-    if (bridge_class == NULL) {
-        goto cleanup;
-    }
-    if (lunarunlocker_register_native_bridge(env, bridge_class) != JNI_OK) {
-        goto cleanup;
-    }
-    registered = 1;
-    if (!pin_native_module()) {
-        goto cleanup;
-    }
-    lunarunlocker_log(L"NativeBridge linked from %ls", jar_path);
-    if (!call_bridge_start(env, bridge_class)) {
-        goto cleanup;
-    }
-    lunarunlocker_loader_report_completed();
-    lunarunlocker_log(L"NativeBridge.start completed; injection is active");
-    completed = 1;
-    exit_code = 0;
-
-cleanup:
-    if (!completed) {
-        char failure[96];
-        _snprintf_s(failure, sizeof(failure), _TRUNCATE,
-                "Native bootstrap failed with code %lu", exit_code);
-        lunarunlocker_loader_report_failure(failure);
-    }
-    if (attached) {
-        (*vm)->DetachCurrentThread(vm);
-    }
-    if (!registered && worker_module != NULL) {
-        lunarunlocker_log(L"bootstrap failed before native registration; unloading DLL");
-        FreeLibraryAndExitThread(worker_module, exit_code);
-    }
-    if (!completed) {
-        lunarunlocker_log(L"bootstrap did not complete; DLL remains loaded because natives may be registered");
-    }
-    return exit_code;
+    return 0;
 }
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {

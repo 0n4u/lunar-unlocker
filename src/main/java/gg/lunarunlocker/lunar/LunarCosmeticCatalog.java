@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-
 public final class LunarCosmeticCatalog {
     private static String cachedPath;
     private static long cachedLength;
@@ -54,8 +53,15 @@ public final class LunarCosmeticCatalog {
         catch (Throwable failure) {
             LunarUnlocker.debugLog("LUNAR cosmetic catalog load failed: path="
                     + catalog.getAbsolutePath() + " error=" + failure);
-            return Collections.emptyList();
         }
+        return Collections.emptyList();
+    }
+
+    static synchronized void resetForTests() {
+        cachedPath = null;
+        cachedLength = 0L;
+        cachedLastModified = 0L;
+        cachedIds = null;
     }
 
     static List<Integer> parse(Reader reader) {
@@ -82,7 +88,6 @@ public final class LunarCosmeticCatalog {
                 }
             }
             catch (ArithmeticException | NumberFormatException ignored) {
-                
             }
         }
         return Collections.unmodifiableList(new ArrayList<Integer>(ids));

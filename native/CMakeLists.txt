@@ -45,9 +45,12 @@ set_property(SOURCE "${CMAKE_CURRENT_BINARY_DIR}/generated/payload.rc"
 
 add_library(LunarUnlockerNative SHARED
         dllmain.c
+        lunar_unlock_engine.cpp
         loader_bootstrap.c
         native_bridge.c
+        third_party/cold_eternity/agent.cpp
         "${CMAKE_CURRENT_BINARY_DIR}/generated/payload.rc")
+target_compile_features(LunarUnlockerNative PRIVATE cxx_std_17)
 target_include_directories(LunarUnlockerNative PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}"
         "${LUNARUNLOCKER_JNI_INCLUDE}"
@@ -214,6 +217,23 @@ if(BUILD_TESTING)
             MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
     add_test(NAME LocalControllerService COMMAND LocalControllerServiceTest)
     set_tests_properties(LocalControllerService PROPERTIES TIMEOUT 10)
+
+    add_executable(LunarUnlockEngineTest
+            tests/lunar_unlock_engine_test.cpp
+            lunar_unlock_engine.cpp
+            loader_bootstrap.c
+            third_party/cold_eternity/agent.cpp)
+    target_include_directories(LunarUnlockEngineTest PRIVATE
+            "${CMAKE_CURRENT_SOURCE_DIR}"
+            "${LUNARUNLOCKER_JNI_INCLUDE}"
+            "${LUNARUNLOCKER_JNI_MD_INCLUDE}"
+            "${LUNARUNLOCKER_JVMTI_INCLUDE}")
+    target_compile_features(LunarUnlockEngineTest PRIVATE cxx_std_17)
+    target_compile_definitions(LunarUnlockEngineTest PRIVATE
+            WIN32_LEAN_AND_MEAN NOMINMAX)
+    target_compile_options(LunarUnlockEngineTest PRIVATE /W4 /permissive- /utf-8)
+    target_link_libraries(LunarUnlockEngineTest PRIVATE ws2_32)
+    add_test(NAME LunarUnlockEngine COMMAND LunarUnlockEngineTest)
 endif()
 
 set_property(TARGET LunarUnlockerNative LunarUnlockerLoaderGui
